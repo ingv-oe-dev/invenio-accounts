@@ -12,6 +12,8 @@
 from flask import abort, current_app, request
 from flask_security.views import anonymous_user_required
 from flask_security.views import login as base_login
+from flask_security.views import register as base_register
+from .rest import RegisterView
 
 from .settings import blueprint
 
@@ -30,5 +32,12 @@ def login(*args, **kwargs):
 
     return base_login(*args, **kwargs)
 
+@anonymous_user_required
+@blueprint.route("/signup")
+def register(*args, **kwargs):
+    register_form_submitted = request.method == "POST"
+    if register_form_submitted:
+        return RegisterView().post()
+    return base_register(*args, **kwargs)
 
-__all__ = ("blueprint", "login")
+__all__ = ("blueprint", "login", "register")

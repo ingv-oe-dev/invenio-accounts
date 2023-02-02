@@ -156,6 +156,11 @@ class InvenioAccounts(object):
         if new_login_view is not None:
             app.view_functions["security.login"] = new_login_view
 
+        new_register_view = obj_or_import_string(
+            app.config.get('ACCOUNTS_REGISTER_VIEW_FUNCTION')
+        )
+        app.view_functions["security.register"] = new_register_view
+
         self.register_anonymous_identity_loader(state)
 
         app.extensions["security"].register_form = register_form_factory(

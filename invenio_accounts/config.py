@@ -15,7 +15,7 @@ from datetime import timedelta
 from flask_babelex import lazy_gettext as _
 
 from .profiles import UserPreferencesSchema, UserProfileSchema
-from .views import login
+from .views import login, register
 
 ACCOUNTS = True
 """Tells if the templates should use the accounts module.
@@ -38,7 +38,7 @@ otherwise it will use the in-memory backend :class:`simplekv.memory.DictStore`.
 ACCOUNTS_SESSION_REDIS_URL = None
 """Redis URL used by the module as a cache system for sessions."""
 
-ACCOUNTS_REGISTER_BLUEPRINT = None
+ACCOUNTS_REGISTER_BLUEPRINT = "blueprint"
 """Register the Security blueprint or not.
 
 It can be used to override the ``register_blueprint`` option.
@@ -171,6 +171,7 @@ SECURITY_FORGOT_PASSWORD_TEMPLATE = "invenio_accounts/forgot_password.html"
 SECURITY_LOGIN_USER_TEMPLATE = "invenio_accounts/login_user.html"
 """Default template for login."""
 
+# SECURITY_USER_TEMPLATE = "invenio_accounts/register_user.html"
 SECURITY_REGISTER_USER_TEMPLATE = "invenio_accounts/register_user.html"
 """Default template for user registration."""
 
@@ -299,6 +300,8 @@ ACCOUNTS_USERINFO_HEADERS = False
 """If True, add X-Session-ID and X-User-ID to the HTTP response."""
 
 ACCOUNTS_LOGIN_VIEW_FUNCTION = login
+
+ACCOUNTS_REGISTER_VIEW_FUNCTION = register
 """The view function to use for the login endpoint.
 
 This can be either an import string, or the view function itself.
