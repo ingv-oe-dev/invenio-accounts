@@ -178,6 +178,40 @@ def register_user(_confirmation_link_func=None, send_register_msg=True, **user_d
 
     return user
 
+def register_user_notify_admin(_confirmation_link_func=None, send_register_msg=True, **user_data):
+    """Register a user."""
+    confirmation_link_func = _confirmation_link_func or default_confirmation_link_func
+    if user_data.get("password") is not None:
+        user_data["password"] = hash_password(user_data["password"])
+    user = current_datastore.create_user(**user_data)
+    current_datastore.commit()
+
+    token, confirmation_link = None, None
+    if current_security.confirmable and user.confirmed_at is None:
+        token, confirmation_link = confirmation_link_func(user)
+
+    user_registered.send(
+        current_app._get_current_object(), user=user, confirm_token=token
+    )
+
+    if send_register_msg and security_config_value("SEND_REGISTER_EMAIL"):
+        """First send email to admin with confirmation link"""
+        send_mail(
+            security_config_value("EMAIL_SUBJECT_REGISTER"),
+            current_app.config["SECURITY_EMAIL_SENDER"],
+            "notifyadmin",
+            user=user,
+            confirmation_link=confirmation_link,
+        )
+        """Then notify user about account creation"""
+        send_mail(
+            security_config_value("EMAIL_SUBJECT_REGISTER"),
+            user.email,
+            "welcomeuser",
+            user=user,
+        )
+
+    return user
 
 def change_user_password(_reset_password_link_func=None, **user_data):
     """Change user password."""

@@ -1,0 +1,9 @@
+Hello administrator, 
+a new user registration with email {{ user.email }}
+
+{% if security.confirmable %}
+You can confirm this email account through the link below:
+
+{{ confirmation_link }}
+
+{% endif %}

@@ -1,0 +1,6 @@
+{{ _('Welcome %(email)s!', email=user.email) }}
+
+Your account is successfully created and you will be notified soon when administrators will confirm it.
+Then you can login. 
+
+See you soon.

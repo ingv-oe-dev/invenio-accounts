@@ -5,7 +5,7 @@ from .rest import RegisterView, user_already_authenticated, \
 	unique_user_email, use_args, use_kwargs
 from ..proxies import current_security
 from ..utils import (
-    register_user,
+    register_user_notify_admin,
 )
 
 class IRegisterView(RegisterView):
@@ -20,7 +20,6 @@ class IRegisterView(RegisterView):
 
 	def success_response(self, user):
 	    """Return a successful register response."""
-	    # login_user(user)
 	    return redirect(url_for('security.login'))
 
 	@use_kwargs(post_args)
@@ -29,6 +28,5 @@ class IRegisterView(RegisterView):
 	    if not current_security.registerable:
 	        _abort(get_message("REGISTRATION_DISABLED")[0])
 
-	    user = register_user(**kwargs)
-	    self.login_user(user)
+	    user = register_user_notify_admin(**kwargs)
 	    return self.success_response(user)
