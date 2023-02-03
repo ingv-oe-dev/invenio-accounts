@@ -9,12 +9,14 @@
 
 """Invenio-accounts views."""
 
-from flask import abort, current_app, request
+from flask import abort, current_app, redirect, request
+from flask_security.utils import get_post_register_redirect
 from flask_security.views import anonymous_user_required
 from flask_security.views import login as base_login
 from flask_security.views import register as base_register
-from .view import IRegisterView
 
+from ..proxies import current_security
+from ..utils import register_user
 from .settings import blueprint
 
 
@@ -36,8 +38,20 @@ def login(*args, **kwargs):
 @blueprint.route("/signup")
 def register(*args, **kwargs):
     register_form_submitted = request.method == "POST"
-    if register_form_submitted:
-        return IRegisterView().post()
+    if register_form_submitted and current_security.confirmable:
+        form_class = current_security.confirm_register_form
+        form = form_class(request.form)
+        if form.validate_on_submit():
+            user = register_user(**form.to_dict())
+            form.user = user
+        if not request.is_json:
+            if 'next' in form:
+                redirect_url = get_post_register_redirect(form.next.data)
+            else:
+                redirect_url = get_post_register_redirect()
+
+            return redirect(redirect_url)
+            
     return base_register(*args, **kwargs)
 
 __all__ = ("blueprint", "login", "register")

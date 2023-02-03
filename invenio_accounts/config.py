@@ -300,14 +300,13 @@ ACCOUNTS_USERINFO_HEADERS = False
 """If True, add X-Session-ID and X-User-ID to the HTTP response."""
 
 ACCOUNTS_LOGIN_VIEW_FUNCTION = login
-
-ACCOUNTS_REGISTER_VIEW_FUNCTION = register
 """The view function to use for the login endpoint.
 
 This can be either an import string, or the view function itself.
 If set to None, the default login view function from Flask-Security will be
 left as is.
 """
+ACCOUNTS_REGISTER_VIEW_FUNCTION = register
 
 ACCOUNTS_LOCAL_LOGIN_ENABLED = True
 """Whether or not login with local account credentials should be enabled."""
