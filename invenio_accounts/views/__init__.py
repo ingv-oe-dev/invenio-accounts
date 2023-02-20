@@ -16,7 +16,7 @@ from flask_security.views import login as base_login
 from flask_security.views import register as base_register
 
 from ..proxies import current_security
-from ..utils import register_user
+from ..utils import register_user_notify_admin
 from .settings import blueprint
 
 
@@ -42,7 +42,7 @@ def register(*args, **kwargs):
         form_class = current_security.confirm_register_form
         form = form_class(request.form)
         if form.validate_on_submit():
-            user = register_user(**form.to_dict())
+            user = register_user_notify_admin(**form.to_dict())
             form.user = user
         if not request.is_json:
             if 'next' in form:
