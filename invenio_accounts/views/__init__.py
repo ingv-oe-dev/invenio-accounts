@@ -20,6 +20,10 @@ from ..utils import register_user_notify_admin
 from .settings import blueprint
 
 
+def _ctx(endpoint):
+    return current_security._run_ctx_processor(endpoint)
+
+
 @anonymous_user_required
 @blueprint.route("/login")
 def login(*args, **kwargs):
@@ -34,6 +38,7 @@ def login(*args, **kwargs):
 
     return base_login(*args, **kwargs)
 
+
 @anonymous_user_required
 @blueprint.route("/signup")
 def register(*args, **kwargs):
@@ -44,6 +49,13 @@ def register(*args, **kwargs):
         if form.validate_on_submit():
             user = register_user_notify_admin(**form.to_dict())
             form.user = user
+        else:
+            return current_security.render_template(
+                current_app.config.get("SECURITY_REGISTER_USER_TEMPLATE"),
+                register_user_form=form,
+                **_ctx("register")
+            )
+
         if not request.is_json:
             if 'next' in form:
                 redirect_url = get_post_register_redirect(form.next.data)
@@ -51,7 +63,8 @@ def register(*args, **kwargs):
                 redirect_url = get_post_register_redirect()
 
             return redirect(redirect_url)
-            
+
     return base_register(*args, **kwargs)
+
 
 __all__ = ("blueprint", "login", "register")

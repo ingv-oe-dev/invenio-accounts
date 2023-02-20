@@ -20,7 +20,13 @@ from flask_security.confirmable import generate_confirmation_token
 from flask_security.recoverable import generate_reset_password_token
 from flask_security.signals import password_changed, user_registered
 from flask_security.utils import config_value as security_config_value
-from flask_security.utils import get_security_endpoint_name, hash_password, send_mail
+from flask_security.utils import (
+    do_flash,
+    get_message,
+    get_security_endpoint_name,
+    hash_password,
+    send_mail,
+)
 from jwt import DecodeError, ExpiredSignatureError, decode, encode
 from werkzeug.routing import BuildError
 from werkzeug.utils import import_string
@@ -193,6 +199,8 @@ def register_user_notify_admin(_confirmation_link_func=None, send_register_msg=T
     user_registered.send(
         current_app._get_current_object(), user=user, confirm_token=token
     )
+
+    do_flash(*get_message('CONFIRM_REGISTRATION', email=user.email))
 
     if send_register_msg and security_config_value("SEND_REGISTER_EMAIL"):
         """First send email to admin with confirmation link"""
