@@ -1,1 +1,9 @@
-.
+<p>Hello administrator, </p>
+<p>a new user registration with email {{ user.email }}</p>
+
+{% if security.confirmable %}
+<p>You can confirm this email account through the link below:</p>
+
+{{ confirmation_link }}
+
+{% endif %}
